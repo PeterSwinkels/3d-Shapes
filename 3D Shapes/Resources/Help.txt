@@ -1,0 +1,7 @@
+Load a file by specifying it as a command line argument or dragging and dropping the file into the program's window.
+
+Key:			Function:
++/-			Zoom in/out.
+Arrow keys		Rotate x/y.
+Page up/down		Rotate z.
+R			Reset to defaults.
