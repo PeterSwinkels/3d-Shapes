@@ -23,12 +23,13 @@ Partial Class InterfaceWindow
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(InterfaceWindow))
         Me.StatusBar = New System.Windows.Forms.StatusStrip()
         Me.AnglesLabel = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ZoonLabel = New System.Windows.Forms.ToolStripStatusLabel()
         Me.MenuBar = New System.Windows.Forms.MenuStrip()
-        Me.HelpMainMenu = New System.Windows.Forms.ToolStripMenuItem()
         Me.FileMainMenu = New System.Windows.Forms.ToolStripMenuItem()
+        Me.HelpMainMenu = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolTip = New System.Windows.Forms.ToolTip(Me.components)
         Me.FileDialog = New System.Windows.Forms.OpenFileDialog()
         Me.StatusBar.SuspendLayout()
@@ -65,20 +66,17 @@ Partial Class InterfaceWindow
         Me.MenuBar.TabIndex = 1
         Me.MenuBar.Text = "MenuStrip1"
         '
-        'HelpMainMenu
-        '
-        Me.HelpMainMenu.Name = "HelpMainMenu"
-        Me.HelpMainMenu.Size = New System.Drawing.Size(44, 20)
-        Me.HelpMainMenu.Text = "&Help"
-        '
         'FileMainMenu
         '
         Me.FileMainMenu.Name = "FileMainMenu"
         Me.FileMainMenu.Size = New System.Drawing.Size(37, 20)
         Me.FileMainMenu.Text = "&File"
         '
-        'FileDialog
+        'HelpMainMenu
         '
+        Me.HelpMainMenu.Name = "HelpMainMenu"
+        Me.HelpMainMenu.Size = New System.Drawing.Size(44, 20)
+        Me.HelpMainMenu.Text = "&Help"
         '
         'InterfaceWindow
         '
@@ -90,6 +88,7 @@ Partial Class InterfaceWindow
         Me.Controls.Add(Me.StatusBar)
         Me.Controls.Add(Me.MenuBar)
         Me.DoubleBuffered = True
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
         Me.MainMenuStrip = Me.MenuBar
         Me.Name = "InterfaceWindow"

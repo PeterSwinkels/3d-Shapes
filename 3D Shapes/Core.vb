@@ -60,14 +60,26 @@ Public Module CoreModule
       End Sub
    End Structure
 
-   Public AngleX As New Double                                                                                'Contains the angle along the x-axis.
-   Public AngleY As New Double                                                                                'Contains the angle along the y-axis.
-   Public AngleZ As New Double                                                                                'Contains the angle along the z-axis.
-   Public CameraZ As New Integer                                                                              'Contains the camera's distance.
-   Public Shape As New ShapeStr With {.Lines = New List(Of LineStr), .Vertices = New List(Of Vertex3DStr)}    'Contains the shape.
-   Public Zoom As New Double                                                                                  'Contains the zoom factor.
+   'This structure defines the shape being viewed.
+   Public Structure ShapeViewStr
+      Public AngleX As Double     'Defines the angle along the x-axis.
+      Public AngleY As Double     'Defines the angle along the y-axis.
+      Public AngleZ As Double     'Defines the angle along the z-axis.
+      Public CameraZ As Integer   'Defines the camera's distance.
+      Public Shape As ShapeStr    'Defines the shape.
+      Public Zoom As Double       'Defines the zoom factor.
+   End Structure
 
-   'This procedure increases/decreases the specified angle and returns the result.
+   Public ShapeView As New ShapeViewStr With {
+      .AngleX = New Double,
+      .AngleY = New Double,
+      .AngleZ = New Double,
+      .CameraZ = New Integer,
+      .Shape = New ShapeStr With {.Lines = New List(Of LineStr), .Vertices = New List(Of Vertex3DStr)},
+      .Zoom = New Double
+   }  'Contains the shape being viewed.
+
+   'This procedure returns the specified angle adjusted as specified.
    Public Function AdjustAngle(Angle As Double, Increase As Boolean, Optional Change As Double = 0.05) As Double
       Try
          If Increase Then
@@ -106,14 +118,33 @@ Public Module CoreModule
    'This procedure initializes the display parameters.
    Public Sub InitializeDisplayParameters()
       Try
-         AngleX = 0
-         AngleY = 0
-         AngleZ = 0
-         Zoom = DEFAULT_ZOOM
+         ShapeView.AngleX = 0
+         ShapeView.AngleY = 0
+         ShapeView.AngleZ = 0
+         ShapeView.Zoom = DEFAULT_ZOOM
       Catch ExceptionO As Exception
          DisplayError(ExceptionO)
       End Try
    End Sub
+
+   'This procedure returns the coordinate furthest from the shape's center.
+   Private Function GetMaximumCoordinate(Vertices As List(Of Vertex3DStr)) As Double
+      Try
+         Dim Maximum As New Double
+         Dim MaximumCoordinate As New Double
+
+         For Each Vertex As Vertex3DStr In Vertices
+            Maximum = {Abs(Vertex.X), Abs(Vertex.Y), Abs(Vertex.Z)}.Max()
+            If Maximum >= MaximumCoordinate Then MaximumCoordinate = Maximum
+         Next Vertex
+
+         Return MaximumCoordinate
+      Catch ExceptionO As Exception
+         DisplayError(ExceptionO)
+      End Try
+
+      Return Nothing
+   End Function
 
    'This procedure returns a shape's data loaded from the specified file.
    Public Function LoadShape(FilePath As String) As ShapeStr
@@ -121,8 +152,8 @@ Public Module CoreModule
          Dim Items() As String = {}
          Dim Shape As New ShapeStr
 
-         Shape.Vertices = New List(Of Vertex3DStr)()
          Shape.Lines = New List(Of LineStr)()
+         Shape.Vertices = New List(Of Vertex3DStr)()
 
          For Each Line As String In File.ReadLines(FilePath)
             Line = Line.Trim()
@@ -143,30 +174,11 @@ Public Module CoreModule
             End If
          Next Line
 
-         CameraZ = CInt(GetMaximumCoordinate(Shape.Vertices) * 2)
+         ShapeView.CameraZ = CInt(GetMaximumCoordinate(Shape.Vertices) * 2)
 
          InitializeDisplayParameters()
 
          Return Shape
-      Catch ExceptionO As Exception
-         DisplayError(ExceptionO)
-      End Try
-
-      Return Nothing
-   End Function
-
-   'This procedure returns the coordinate furthest from the shape's center.
-   Private Function GetMaximumCoordinate(Vertices As List(Of Vertex3DStr)) As Double
-      Try
-         Dim Maximum As Double = Double.MinValue
-         Dim MaximumCoordinate As New Double
-
-         For Each Vertex As Vertex3DStr In Vertices
-            Maximum = {Abs(Vertex.X), Abs(Vertex.Y), Abs(Vertex.Z)}.Max()
-            If Maximum >= MaximumCoordinate Then MaximumCoordinate = Maximum
-         Next Vertex
-
-         Return MaximumCoordinate
       Catch ExceptionO As Exception
          DisplayError(ExceptionO)
       End Try
@@ -187,18 +199,18 @@ Public Module CoreModule
       Return Nothing
    End Function
 
-   'This procedure rotates a vertex along the specified axis and returns the result.
+   'This procedure returns a vertex rotated along the specified axis.
    Public Function Rotate(Vertex As Vertex3DStr, Angle As Double, Axis As AxesE) As Vertex3DStr
       Try
          Dim RotatedVertex As Vertex3DStr
 
          Select Case Axis
             Case AxesE.x
-               RotatedVertex = New Vertex3DStr(Vertex.X, (Vertex.Y * Cos(Angle)) - Vertex.Z * Sin(Angle), (Vertex.Y * Sin(Angle)) + (Vertex.Z * Cos(Angle)))
+               RotatedVertex = New Vertex3DStr(Vertex.X, (Vertex.Y * Cos(Angle)) - Vertex.Z * Sin(Angle), Vertex.Y * Sin(Angle) + Vertex.Z * Cos(Angle))
             Case AxesE.y
-               RotatedVertex = New Vertex3DStr((Vertex.X * Cos(Angle)) + Vertex.Z * Sin(Angle), Vertex.Y, (-Vertex.X * Sin(Angle)) + (Vertex.Z * Cos(Angle)))
+               RotatedVertex = New Vertex3DStr((Vertex.X * Cos(Angle)) + Vertex.Z * Sin(Angle), Vertex.Y, -Vertex.X * Sin(Angle) + Vertex.Z * Cos(Angle))
             Case AxesE.z
-               RotatedVertex = New Vertex3DStr((Vertex.X * Cos(Angle)) - (Vertex.Y * Sin(Angle)), (Vertex.X * Sin(Angle)) + (Vertex.Y * Cos(Angle)), Vertex.Z)
+               RotatedVertex = New Vertex3DStr(Vertex.X * Cos(Angle) - Vertex.Y * Sin(Angle), Vertex.X * Sin(Angle) + Vertex.Y * Cos(Angle), Vertex.Z)
          End Select
 
          Return RotatedVertex
