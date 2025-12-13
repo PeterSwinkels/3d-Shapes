@@ -10,7 +10,7 @@ v 1 -1 1
 v 1 1 1
 v -1 1 1
 
-# Lines (vertex list indexes)
+# Lines (vertex indices)
 l 0 1
 l 1 2
 l 2 3
