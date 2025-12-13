@@ -54,9 +54,9 @@ Public Module CoreModule
 
       'This procedure creates a vertex with the specified coordinates.
       Public Sub New(NewX As Double, NewY As Double, NewZ As Double)
-         Me.X = NewX
-         Me.Y = NewY
-         Me.Z = NewZ
+         X = NewX
+         Y = NewY
+         Z = NewZ
       End Sub
    End Structure
 
@@ -150,10 +150,7 @@ Public Module CoreModule
    Public Function LoadShape(FilePath As String) As ShapeStr
       Try
          Dim Items() As String = {}
-         Dim Shape As New ShapeStr
-
-         Shape.Lines = New List(Of LineStr)()
-         Shape.Vertices = New List(Of Vertex3DStr)()
+         Dim Shape As New ShapeStr With {.Lines = New List(Of LineStr)(), .Vertices = New List(Of Vertex3DStr)()}
 
          For Each Line As String In File.ReadLines(FilePath)
             Line = Line.Trim()
